@@ -28,7 +28,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # XỬ LÝ ẢNH
 # ==========================
 
-def normalize_image(img, size=(3000, 3000)):
+def normalize_image(img, size=(1200, 1200)):
     img = img.convert("L")
     img = img.resize(size)
     return np.array(img)
