@@ -28,7 +28,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # XỬ LÝ ẢNH
 # ==========================
 
-def normalize_image(img, size=(120, 120)):
+def normalize_image(img, size=(3000, 3000)):
     img = img.convert("L")
     img = img.resize(size)
     return np.array(img)
@@ -65,33 +65,40 @@ async def compare_images(
     goc: UploadFile = File(...),
     cheban: UploadFile = File(...)
 ):
-    img1 = Image.open(goc.file)
-    img2 = Image.open(cheban.file)
+    try:
+        img1 = Image.open(goc.file)
+        img2 = Image.open(cheban.file)
 
-    img1 = normalize_image(img1)
-    img2 = normalize_image(img2)
+        img1 = normalize_image(img1)
+        img2 = normalize_image(img2)
 
-    edges1 = extract_edges(img1)
-    edges2 = extract_edges(img2)
+        edges1 = extract_edges(img1)
+        edges2 = extract_edges(img2)
 
-    diff = cv2.absdiff(edges1, edges2)
-    diff_points = int(np.count_nonzero(diff))
+        diff = cv2.absdiff(edges1, edges2)
+        diff_points = int(np.count_nonzero(diff))
 
-    if diff_points == 0:
-        return {"status": "ok", "changed": False}
+        if diff_points == 0:
+            return {"status": "ok", "changed": False}
 
-    highlight, regions = highlight_missing_content(img1, img2)
+        highlight, regions = highlight_missing_content(img1, img2)
 
-    filename = f"{uuid.uuid4()}.png"
-    path = os.path.join(OUTPUT_DIR, filename)
-    cv2.imwrite(path, highlight)
+        filename = f"{uuid.uuid4()}.png"
+        path = os.path.join(OUTPUT_DIR, filename)
+        cv2.imwrite(path, highlight)
 
-    return {
-        "status": "changed",
-        "changed": True,
-        "regions": regions,
-        "image_url": f"/api/image/{filename}"
-    }
+        return {
+            "status": "changed",
+            "changed": True,
+            "regions": regions,
+            "image_url": f"/api/image/{filename}"
+        }
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
 
 @app.get("/api/image/{name}")
 def get_image(name: str):
