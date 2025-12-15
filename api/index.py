@@ -12,12 +12,14 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # hoặc domain frontend
+    allow_origins=[
+        "https://prepress-tooling.vercel.app",
+        "http://localhost:5173"  # nếu dev bằng Vite
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 OUTPUT_DIR = "/tmp/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
