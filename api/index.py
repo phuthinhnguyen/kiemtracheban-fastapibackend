@@ -71,11 +71,11 @@ async def compare_images(
     cheban: UploadFile = File(...)
 ):
     try:
-        img1 = pdf_to_image(goc.file)
-        img2 = pdf_to_image(cheban.file)
+        img1_pdf = pdf_to_image(goc.file)
+        img2_pdf = pdf_to_image(cheban.file)
 
-        img1 = normalize_image(img1)
-        img2 = normalize_image(img2)
+        img1 = normalize_image(img1_pdf)
+        img2 = normalize_image(img2_pdf)
 
         edges1 = extract_edges(img1)
         edges2 = extract_edges(img2)
