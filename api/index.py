@@ -71,8 +71,8 @@ async def compare_images(
     cheban: UploadFile = File(...)
 ):
     try:
-        img1_pdf = pdf_to_image(goc.file)
-        img2_pdf = pdf_to_image(cheban.file)
+        img1_pdf = pdf_to_image(goc)
+        img2_pdf = pdf_to_image(cheban)
 
         img1 = normalize_image(img1_pdf)
         img2 = normalize_image(img2_pdf)
