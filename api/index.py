@@ -6,7 +6,7 @@ from PIL import Image
 import os
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
-
+from pdf2image import convert_from_bytes
 
 app = FastAPI()
 
@@ -27,6 +27,11 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # ==========================
 # XỬ LÝ ẢNH
 # ==========================
+
+def pdf_to_image(upload: UploadFile):
+    pdf_bytes = upload.file.read()
+    images = convert_from_bytes(pdf_bytes, dpi=300)
+    return images[0]
 
 def normalize_image(img, size=(3000, 3000)):
     img = img.convert("L")
@@ -66,8 +71,8 @@ async def compare_images(
     cheban: UploadFile = File(...)
 ):
     try:
-        img1 = Image.open(goc.file)
-        img2 = Image.open(cheban.file)
+        img1 = pdf_to_image(goc.file)
+        img2 = pdf_to_image(cheban.file)
 
         img1 = normalize_image(img1)
         img2 = normalize_image(img2)
